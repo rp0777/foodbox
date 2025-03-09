@@ -1,44 +1,36 @@
-// WITH A LIBRARY
-// "use client"
-// import React from 'react'
-// import Countdown from 'react-countdown'
-
-// const endingDate = new Date("2023-07-25")
-
-// const CountDown = () => {
-//   return (
-//     <Countdown className='font-bold text-5xl text-yellow-300' date={endingDate}/>
-//   )
-// }
-
-// export default CountDown
-
-// WITHOUT A LIBRARY
 "use client";
 import React, { useState, useEffect } from "react";
 
 const CountDown = () => {
-  let difference = +new Date(`03/30/2024`) - +new Date();
-  const [delay, setDelay] = useState(difference);
+  // Function to get the target date (7 days from now)
+  const getTargetDate = () => {
+    return +new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
+  };
+
+  // Initial difference calculation
+  const [targetDate, setTargetDate] = useState(getTargetDate());
+  const [difference, setDifference] = useState(targetDate - +new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const newDifference = targetDate - +new Date();
+
+      if (newDifference <= 0) {
+        // Reset target date to 7 days from now
+        setTargetDate(getTargetDate());
+      } else {
+        setDifference(newDifference);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
 
   const d = Math.floor(difference / (1000 * 60 * 60 * 24));
   const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
   const m = Math.floor((difference / 1000 / 60) % 60);
   const s = Math.floor((difference / 1000) % 60);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDelay(delay - 1);
-    }, 1000);
-
-    if (delay === 0) {
-      clearInterval(timer);
-    }
-
-    return () => {
-      clearInterval(timer);
-    };
-  });
   return (
     <span className="font-bold text-5xl text-yellow-300">
       {d}:{h}:{m}:{s}
